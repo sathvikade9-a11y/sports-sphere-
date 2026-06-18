@@ -314,106 +314,129 @@ export default function App() {
     return cleaned;
   };
 
-  // Inquiry Form Submission
+  // Inquiry Form Submission — saves to Supabase first, then opens WhatsApp to owner
   const handleInquirySubmit = async (e) => {
     e.preventDefault();
+    const { name, email, phone, message } = inquiryForm;
+    const OWNER_PHONE = '917396162006';
+
+    // Step 1: Save to Supabase via the backend API
+    let savedOk = false;
     try {
       const response = await fetch('/api/inquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: inquiryForm.name,
-          email: inquiryForm.email,
-          phone: inquiryForm.phone,
+          name,
+          email,
+          phone,
           productName: selectedProductForInquiry,
-          message: inquiryForm.message
+          message
         })
       });
-
-      if (response.ok) {
-        const { name, email, phone, message } = inquiryForm;
-        
-        setInquiryModalOpen(false);
-        setInquiryForm({ name: '', email: '', phone: '', message: '' });
-        setSuccessContent({
-          title: "Inquiry Submitted!",
-          message: `Thank you, ${name}. We have logged your request for the "${selectedProductForInquiry}". We will redirect you to send a message via WhatsApp.`
-        });
-        setSuccessModalOpen(true);
-
-        // Open WhatsApp directly to the owner's phone number
-        const targetPhone = '917396162006';
-        const whatsappText = `Hello,\n\nHere is the product inquiry from the website:\n\n*Product:* ${selectedProductForInquiry}\n*Name:* ${name}\n*Email:* ${email || 'N/A'}\n*Phone:* ${phone || 'N/A'}\n*Message:* ${message || 'N/A'}`;
-        const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(whatsappText)}`;
-        window.open(whatsappUrl, '_blank');
-
-        // Open mailto link if email is provided
-        if (email) {
-          const emailSubject = `Product Inquiry - ${selectedProductForInquiry}`;
-          const emailBody = `Hello,\n\nHere is your product inquiry from the website:\n\nProduct: ${selectedProductForInquiry}\nName: ${name}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\nMessage: ${message || 'N/A'}`;
-          const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-          window.open(mailtoUrl, '_blank');
-        }
-      } else {
-        alert("Failed to submit inquiry. Please try again.");
-      }
+      if (response.ok) savedOk = true;
     } catch (err) {
-      console.error("Inquiry submission error:", err);
-      alert("Backend connection error. Please try again.");
+      console.error('Inquiry save error:', err);
+    }
+
+    // Step 2: Close modal and reset form
+    setInquiryModalOpen(false);
+    setInquiryForm({ name: '', email: '', phone: '', message: '' });
+
+    // Step 3: Show success modal
+    setSuccessContent({
+      title: savedOk ? 'Inquiry Submitted!' : 'Inquiry Sent via WhatsApp',
+      message: savedOk
+        ? `Thank you, ${name}. Your inquiry for "${selectedProductForInquiry}" has been saved. We are now redirecting you to WhatsApp to notify our team.`
+        : `Thank you, ${name}. We are redirecting you to WhatsApp to send your inquiry for "${selectedProductForInquiry}" directly to our team.`
+    });
+    setSuccessModalOpen(true);
+
+    // Step 4: ALWAYS open WhatsApp to owner with full inquiry details
+    const waText =
+      `Hello,\n\nNew product inquiry from the website:\n\n` +
+      `*Product:* ${selectedProductForInquiry}\n` +
+      `*Name:* ${name}\n` +
+      `*Email:* ${email || 'N/A'}\n` +
+      `*Phone:* ${phone || 'N/A'}\n` +
+      `*Message:* ${message || 'N/A'}\n\n` +
+      `${savedOk ? '✅ Saved to database.' : '⚠️ Database save failed — received via WhatsApp only.'}`;
+    window.open(`https://wa.me/${OWNER_PHONE}?text=${encodeURIComponent(waText)}`, '_blank');
+
+    // Step 5: Send email copy to customer if email provided
+    if (email) {
+      const mailBody =
+        `Hello ${name},\n\nThank you for your inquiry for "${selectedProductForInquiry}".\n\n` +
+        `Our team will contact you shortly.\n\n` +
+        `Product: ${selectedProductForInquiry}\nName: ${name}\nPhone: ${phone || 'N/A'}\nMessage: ${message || 'N/A'}`;
+      window.open(
+        `mailto:${email}?subject=${encodeURIComponent('Inquiry Confirmation - ' + selectedProductForInquiry)}&body=${encodeURIComponent(mailBody)}`,
+        '_blank'
+      );
     }
   };
 
-  // Contact Form Submission
+  // Contact Form Submission — saves to Supabase first, then opens WhatsApp to owner
   const handleContactSubmit = async (e) => {
     e.preventDefault();
     setSubmittingContact(true);
+    const { name, email, phone, message } = contactForm;
+    const OWNER_PHONE = '917396162006';
+
+    // Step 1: Save to Supabase via the backend API
+    let savedOk = false;
+    let analysis = {};
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(contactForm)
+        body: JSON.stringify({ name, email, phone, message })
       });
-
       if (response.ok) {
         const data = await response.json();
-        const contactData = data.contact || {};
-        const analysis = contactData.analysis || {};
-        
-        // Preserve values for WhatsApp text redirection
-        const { name, email, phone, message } = contactForm;
-        
-        // Clear contact form state
-        setContactForm({ name: '', email: '', phone: '', message: '' });
-        
-        // Show success modal feedback
-        setSuccessContent({
-          title: "Message Logged!",
-          message: `Hello ${name}, your message has been logged. Click okay and we will redirect you to send this message via WhatsApp and Email.`
-        });
-        setSuccessModalOpen(true);
-
-        // Open WhatsApp directly to the owner's phone number
-        const targetPhone = '917396162006';
-        const whatsappText = `Hello,\n\nHere are the details from the website contact form:\n\n*Name:* ${name}\n*Email:* ${email || 'N/A'}\n*Phone:* ${phone || 'N/A'}\n*Message:* ${message}`;
-        const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(whatsappText)}`;
-        window.open(whatsappUrl, '_blank');
-
-        // Open mailto link if email is provided
-        if (email) {
-          const emailSubject = `Contact Message - ${name}`;
-          const emailBody = `Hello,\n\nHere are the details from the website contact form:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\nMessage: ${message}`;
-          const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-          window.open(mailtoUrl, '_blank');
-        }
-      } else {
-        alert("Failed to submit message. Please try again.");
+        analysis = data?.contact?.analysis || {};
+        savedOk = true;
       }
     } catch (err) {
-      console.error("Contact submission error:", err);
-      alert("Backend connection error. Please try again.");
-    } finally {
-      setSubmittingContact(false);
+      console.error('Contact save error:', err);
     }
+
+    // Step 2: Clear the form
+    setContactForm({ name: '', email: '', phone: '', message: '' });
+
+    // Step 3: Show success modal
+    setSuccessContent({
+      title: savedOk ? 'Message Logged!' : 'Message Sent via WhatsApp',
+      message: savedOk
+        ? `Hello ${name}, your message has been saved to our system. We are now redirecting you to WhatsApp to notify our team directly.`
+        : `Hello ${name}, we are redirecting you to WhatsApp to send your message directly to our team.`
+    });
+    setSuccessModalOpen(true);
+
+    // Step 4: ALWAYS open WhatsApp to owner with full contact details
+    const waText =
+      `Hello,\n\nNew contact message from the website:\n\n` +
+      `*Name:* ${name}\n` +
+      `*Email:* ${email || 'N/A'}\n` +
+      `*Phone:* ${phone || 'N/A'}\n` +
+      `*Message:* ${message}\n\n` +
+      (analysis.category ? `*Category:* ${analysis.category}\n*Urgency:* ${analysis.urgency}\n` : '') +
+      `${savedOk ? '✅ Saved to database.' : '⚠️ Database save failed — received via WhatsApp only.'}`;
+    window.open(`https://wa.me/${OWNER_PHONE}?text=${encodeURIComponent(waText)}`, '_blank');
+
+    // Step 5: Send email copy to customer if email provided
+    if (email) {
+      const mailBody =
+        `Hello ${name},\n\nThank you for contacting Raja Rajeshwara Engineerings.\n\n` +
+        `We have received your message and our team will get back to you shortly.\n\n` +
+        `Your message: ${message}`;
+      window.open(
+        `mailto:${email}?subject=${encodeURIComponent('Thank you for contacting us - Raja Rajeshwara Engineerings')}&body=${encodeURIComponent(mailBody)}`,
+        '_blank'
+      );
+    }
+
+    setSubmittingContact(false);
   };
 
   const openInquiryModal = (productName) => {
