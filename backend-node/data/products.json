@@ -1,0 +1,314 @@
+[
+  {
+    "id": 1,
+    "category": "residential",
+    "name": "Falcon Self-Priming F-100",
+    "brand": "Falcon Pumps",
+    "description": "Highly compact domestic self-priming water pump, ideal for bungalows and residential flats.",
+    "specs": {
+      "Motor Power": "0.5 HP",
+      "Discharge Vol": "32 LPM",
+      "Max Head": "25 Meters"
+    },
+    "image": "assets/images/products/product-centrifugal.png"
+  },
+  {
+    "id": 2,
+    "category": "residential",
+    "name": "Tormac Booster T-900",
+    "brand": "Tormac Pumps",
+    "description": "Single-pump constant pressure booster system ensuring standard pressure flow across luxury showers.",
+    "specs": {
+      "Motor Power": "1.0 HP",
+      "Discharge Vol": "55 LPM",
+      "Max Head": "35 Meters"
+    },
+    "image": "assets/images/products/product-booster.png"
+  },
+  {
+    "id": 3,
+    "category": "residential",
+    "name": "Falcon Centrifugal Monoblock F-MONO-75",
+    "brand": "Falcon Pumps",
+    "description": "High performance domestic monoblock pump for reliable water transfer to overhead tanks.",
+    "specs": {
+      "Motor Power": "0.75 HP",
+      "Discharge Vol": "45 LPM",
+      "Max Head": "30 Meters"
+    },
+    "image": "assets/images/products/product-centrifugal.png"
+  },
+  {
+    "id": 4,
+    "category": "residential",
+    "name": "Tormac Mini Jet T-JET-50",
+    "brand": "Tormac Pumps",
+    "description": "Compact self-priming jet pump, excellent for domestic supply, washing, and garden watering.",
+    "specs": {
+      "Motor Power": "0.5 HP",
+      "Discharge Vol": "28 LPM",
+      "Max Head": "22 Meters"
+    },
+    "image": "assets/images/products/product-centrifugal.png"
+  },
+  {
+    "id": 5,
+    "category": "residential",
+    "name": "Falcon Multi-Stage Silent F-MS-120",
+    "brand": "Falcon Pumps",
+    "description": "Ultra-silent multi-stage residential pressure pump for high comfort multi-story residential buildings.",
+    "specs": {
+      "Motor Power": "1.2 HP",
+      "Discharge Vol": "70 LPM",
+      "Max Head": "42 Meters"
+    },
+    "image": "assets/images/products/product-booster.png"
+  },
+  {
+    "id": 6,
+    "category": "residential",
+    "name": "Tormac Submersible Borewell T-SUB-R3",
+    "brand": "Tormac Pumps",
+    "description": "3-inch slim borehole submersible pump, designed for private residential drinking water wells.",
+    "specs": {
+      "Motor Power": "1.0 HP",
+      "Discharge Vol": "40 LPM",
+      "Max Head": "45 Meters"
+    },
+    "image": "assets/images/products/product-submersible.png"
+  },
+  {
+    "id": 7,
+    "category": "agricultural",
+    "name": "Falcon V6 Submersible F-600",
+    "brand": "Falcon Pumps",
+    "description": "Heavy-duty water cooled submersible pump designed for high dynamic lift irrigation from deep borewells.",
+    "specs": {
+      "Motor Power": "5.0 HP",
+      "Discharge Vol": "450 LPM",
+      "Max Head": "120 Meters"
+    },
+    "image": "assets/images/products/product-submersible.png"
+  },
+  {
+    "id": 8,
+    "category": "agricultural",
+    "name": "Falcon Openwell Submersible F-300",
+    "brand": "Falcon Pumps",
+    "description": "Corrosion resistant openwell submersible pump, perfect for open wells, canals, and river beds.",
+    "specs": {
+      "Motor Power": "3.0 HP",
+      "Discharge Vol": "600 LPM",
+      "Max Head": "22 Meters"
+    },
+    "image": "assets/images/products/product-submersible.png"
+  },
+  {
+    "id": 9,
+    "category": "agricultural",
+    "name": "Tormac Horizontal Openwell T-450",
+    "brand": "Tormac Pumps",
+    "description": "Dynamic balanced horizontal openwell pump suitable for low water level reservoirs and farms.",
+    "specs": {
+      "Motor Power": "2.0 HP",
+      "Discharge Vol": "380 LPM",
+      "Max Head": "18 Meters"
+    },
+    "image": "assets/images/products/product-submersible.png"
+  },
+  {
+    "id": 10,
+    "category": "agricultural",
+    "name": "Tormac V4 Borewell Submersible T-V4-300",
+    "brand": "Tormac Pumps",
+    "description": "V4 water-filled submersible pump, excellent for medium borewells in small-scale farming and horticulture.",
+    "specs": {
+      "Motor Power": "3.0 HP",
+      "Discharge Vol": "150 LPM",
+      "Max Head": "90 Meters"
+    },
+    "image": "assets/images/products/product-submersible.png"
+  },
+  {
+    "id": 11,
+    "category": "agricultural",
+    "name": "Falcon V8 High Discharge F-V8-750",
+    "brand": "Falcon Pumps",
+    "description": "High discharge V8 submersible pump engineered for large-scale crop flooding and high dynamic lift.",
+    "specs": {
+      "Motor Power": "7.5 HP",
+      "Discharge Vol": "850 LPM",
+      "Max Head": "140 Meters"
+    },
+    "image": "assets/images/products/product-submersible.png"
+  },
+  {
+    "id": 12,
+    "category": "agricultural",
+    "name": "Tormac Agricultural Monoblock T-AGRI-500",
+    "brand": "Tormac Pumps",
+    "description": "Surface centrifugal monoblock pump for open farm irrigation channels and canal water drawing.",
+    "specs": {
+      "Motor Power": "5.0 HP",
+      "Discharge Vol": "750 LPM",
+      "Max Head": "28 Meters"
+    },
+    "image": "assets/images/products/product-centrifugal.png"
+  },
+  {
+    "id": 13,
+    "category": "commercial",
+    "name": "Tormac Multi-Stage Booster T-BOOST",
+    "brand": "Tormac Pumps",
+    "description": "Multi-stage pressure booster system with intelligent pressure sensing controls for tall corporate parks.",
+    "specs": {
+      "Motor Power": "3.0 HP",
+      "Discharge Vol": "120 LPM",
+      "Max Head": "50 Meters"
+    },
+    "image": "assets/images/products/product-booster.png"
+  },
+  {
+    "id": 14,
+    "category": "commercial",
+    "name": "Tormac High Pressure Inline T-LINE",
+    "brand": "Tormac Pumps",
+    "description": "Vertical multi-stage inline pumps in Grade 304 stainless steel, supplying superior hygiene water networks.",
+    "specs": {
+      "Motor Power": "4.0 HP",
+      "Discharge Vol": "90 LPM",
+      "Max Head": "65 Meters"
+    },
+    "image": "assets/images/products/product-booster.png"
+  },
+  {
+    "id": 15,
+    "category": "commercial",
+    "name": "Falcon Commercial Booster F-COM-BOOST-50",
+    "brand": "Falcon Pumps",
+    "description": "Multi-pump automatic booster set, ideal for shopping malls, hotels, and commercial high-rises.",
+    "specs": {
+      "Motor Power": "5.0 HP",
+      "Discharge Vol": "220 LPM",
+      "Max Head": "55 Meters"
+    },
+    "image": "assets/images/products/product-booster.png"
+  },
+  {
+    "id": 16,
+    "category": "commercial",
+    "name": "Falcon Vertical Multistage Inline F-VMS-30",
+    "brand": "Falcon Pumps",
+    "description": "Inline stainless steel vertical multi-stage pump for commercial water treatment and RO plants.",
+    "specs": {
+      "Motor Power": "3.0 HP",
+      "Discharge Vol": "80 LPM",
+      "Max Head": "75 Meters"
+    },
+    "image": "assets/images/products/product-booster.png"
+  },
+  {
+    "id": 17,
+    "category": "commercial",
+    "name": "Tormac Fire-Fighting Pump T-FIRE-100",
+    "brand": "Tormac Pumps",
+    "description": "High-pressure booster pump designed specifically for building fire sprinkler systems and hydrant lines.",
+    "specs": {
+      "Motor Power": "10.0 HP",
+      "Discharge Vol": "600 LPM",
+      "Max Head": "80 Meters"
+    },
+    "image": "assets/images/products/product-centrifugal.png"
+  },
+  {
+    "id": 18,
+    "category": "commercial",
+    "name": "Tormac Sewage Drainage T-DRAIN-200",
+    "brand": "Tormac Pumps",
+    "description": "Submersible non-clog cutter pump for commercial basement drainage, wastewater and sewage transfer.",
+    "specs": {
+      "Motor Power": "2.0 HP",
+      "Discharge Vol": "450 LPM",
+      "Max Head": "15 Meters"
+    },
+    "image": "assets/images/products/product-submersible.png"
+  },
+  {
+    "id": 19,
+    "category": "industrial",
+    "name": "Tormac Heavy Centrifugal T-CENT",
+    "brand": "Tormac Pumps",
+    "description": "End-suction process centrifugal pump for cooling towers, processing plants, and water transmission.",
+    "specs": {
+      "Motor Power": "7.5 HP",
+      "Discharge Vol": "800 LPM",
+      "Max Head": "40 Meters"
+    },
+    "image": "assets/images/products/product-centrifugal.png"
+  },
+  {
+    "id": 20,
+    "category": "industrial",
+    "name": "Falcon High Capacity F-MAX",
+    "brand": "Falcon Pumps",
+    "description": "Heavy-gauge cast iron construction double suction high volume pump for flood relief and intake stations.",
+    "specs": {
+      "Motor Power": "15.0 HP",
+      "Discharge Vol": "2500 LPM",
+      "Max Head": "32 Meters"
+    },
+    "image": "assets/images/products/product-centrifugal.png"
+  },
+  {
+    "id": 21,
+    "category": "industrial",
+    "name": "Falcon Process Chemical F-CHEM",
+    "brand": "Falcon Pumps",
+    "description": "Chemical process pump with high chemical grade mechanical seals for acid and chemical fluid transfers.",
+    "specs": {
+      "Motor Power": "5.0 HP",
+      "Discharge Vol": "320 LPM",
+      "Max Head": "28 Meters"
+    },
+    "image": "assets/images/products/product-centrifugal.png"
+  },
+  {
+    "id": 22,
+    "category": "industrial",
+    "name": "Tormac High Temp Boiler Feed T-BOILER-75",
+    "brand": "Tormac Pumps",
+    "description": "Multi-stage high temperature boiler feed pump designed for power plants and textile processing mills.",
+    "specs": {
+      "Motor Power": "7.5 HP",
+      "Discharge Vol": "180 LPM",
+      "Max Head": "110 Meters"
+    },
+    "image": "assets/images/products/product-booster.png"
+  },
+  {
+    "id": 23,
+    "category": "industrial",
+    "name": "Falcon Heavy Slurry F-SLURRY-100",
+    "brand": "Falcon Pumps",
+    "description": "Wear-resistant industrial slurry pump for mineral processing, coal washings, and sand dredging.",
+    "specs": {
+      "Motor Power": "10.0 HP",
+      "Discharge Vol": "900 LPM",
+      "Max Head": "35 Meters"
+    },
+    "image": "assets/images/products/product-centrifugal.png"
+  },
+  {
+    "id": 24,
+    "category": "industrial",
+    "name": "Tormac Grade 316 Chemical T-CHEM-316",
+    "brand": "Tormac Pumps",
+    "description": "All-SS316 corrosion-proof centrifugal pump for pharmaceutical and chemical transfer applications.",
+    "specs": {
+      "Motor Power": "3.0 HP",
+      "Discharge Vol": "250 LPM",
+      "Max Head": "24 Meters"
+    },
+    "image": "assets/images/products/product-centrifugal.png"
+  }
+]
