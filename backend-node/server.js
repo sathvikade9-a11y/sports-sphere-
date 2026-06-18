@@ -10,13 +10,15 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8000';
 
-// Initialize Supabase client if keys are available
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-let supabase = null;
+// Initialize Supabase client — use env vars, fall back to project defaults
+const supabaseUrl = process.env.SUPABASE_URL || 'https://bzmkegjbvpejazbekwpr.supabase.co';
+const supabaseKey = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6bWtlZ2pidnBlamF6YmVrd3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NTA4OTYsImV4cCI6MjA5NzMyNjg5Nn0.b9FPoiM-vjdhDnwTdr09TSAlzp5USKg-k8BG9jYjAAY';
 
-if (supabaseUrl && supabaseKey) {
+let supabase = null;
+try {
   supabase = createClient(supabaseUrl, supabaseKey);
+} catch (e) {
+  supabase = null;
 }
 
 // Middleware
@@ -85,6 +87,15 @@ const mapContactToFrontend = (contact) => ({
 // ==========================================
 // API Endpoints
 // ==========================================
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    supabase: supabase ? 'connected' : 'not connected',
+    supabaseUrl: supabaseUrl ? supabaseUrl.split('.')[0] + '.***' : 'missing'
+  });
+});
 
 // 1. Get Products (Supports Search and Category Filters)
 app.get('/api/products', async (req, res) => {
