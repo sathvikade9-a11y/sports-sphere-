@@ -475,7 +475,7 @@ export default function App() {
                 <li><a href="#testimonials" className={`nav-link ${currentView === 'site' && activeSection === 'testimonials' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Reviews</a></li>
                 <li><a href="#gallery" className={`nav-link ${currentView === 'site' && activeSection === 'gallery' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Gallery</a></li>
                 <li>
-                  <button onClick={() => { setCurrentView('portal'); setMobileMenuOpen(false); }} className={`nav-link ${currentView === 'portal' ? 'active' : ''}`} style={{ background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer', padding: '10px 16px', display: 'block', textAlign: 'left', width: '100%' }}>My Portal</button>
+                  <button onClick={() => { setCurrentView('portal'); setMobileMenuOpen(false); }} className={`nav-link ${currentView === 'portal' ? 'active' : ''}`} style={{ background: '#6b7280', border: 'none', color: 'white', font: 'inherit', cursor: 'pointer', padding: '9px 16px', borderRadius: '6px', fontSize: '0.88rem', fontWeight: '600' }}>My Portal</button>
                 </li>
               </ul>
             </nav>
