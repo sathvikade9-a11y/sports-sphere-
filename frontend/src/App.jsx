@@ -343,12 +343,10 @@ export default function App() {
     setInquiryModalOpen(false);
     setInquiryForm({ name: '', email: '', phone: '', message: '' });
 
-    // Step 3: Show success modal
+    // Step 3: Show success modal — always show success to customer
     setSuccessContent({
-      title: savedOk ? 'Inquiry Submitted!' : 'Inquiry Sent via WhatsApp',
-      message: savedOk
-        ? `Thank you, ${name}. Your inquiry for "${selectedProductForInquiry}" has been saved. We are now redirecting you to WhatsApp to notify our team.`
-        : `Thank you, ${name}. We are redirecting you to WhatsApp to send your inquiry for "${selectedProductForInquiry}" directly to our team.`
+      title: 'Inquiry Submitted!',
+      message: `Thank you, ${name}. Your inquiry for "${selectedProductForInquiry}" has been received. We are now redirecting you to WhatsApp to notify our team.`
     });
     setSuccessModalOpen(true);
 
@@ -360,7 +358,7 @@ export default function App() {
       `*Email:* ${email || 'N/A'}\n` +
       `*Phone:* ${phone || 'N/A'}\n` +
       `*Message:* ${message || 'N/A'}\n\n` +
-      `${savedOk ? '✅ Saved to database.' : '⚠️ Database save failed — received via WhatsApp only.'}`;
+      `${savedOk ? '\u2705 Saved to database.' : '\u26a0\ufe0f Note: DB save failed \u2014 please check Supabase.'}`;
     window.open(`https://wa.me/${OWNER_PHONE}?text=${encodeURIComponent(waText)}`, '_blank');
 
     // Step 5: Send email copy to customer if email provided
@@ -404,12 +402,10 @@ export default function App() {
     // Step 2: Clear the form
     setContactForm({ name: '', email: '', phone: '', message: '' });
 
-    // Step 3: Show success modal
+    // Step 3: Show success modal — always show success to customer
     setSuccessContent({
-      title: savedOk ? 'Message Logged!' : 'Message Sent via WhatsApp',
-      message: savedOk
-        ? `Hello ${name}, your message has been saved to our system. We are now redirecting you to WhatsApp to notify our team directly.`
-        : `Hello ${name}, we are redirecting you to WhatsApp to send your message directly to our team.`
+      title: 'Message Logged!',
+      message: `Hello ${name}, your message has been received. We are now redirecting you to WhatsApp to notify our team directly.`
     });
     setSuccessModalOpen(true);
 
@@ -421,7 +417,7 @@ export default function App() {
       `*Phone:* ${phone || 'N/A'}\n` +
       `*Message:* ${message}\n\n` +
       (analysis.category ? `*Category:* ${analysis.category}\n*Urgency:* ${analysis.urgency}\n` : '') +
-      `${savedOk ? '✅ Saved to database.' : '⚠️ Database save failed — received via WhatsApp only.'}`;
+      `${savedOk ? '\u2705 Saved to database.' : '\u26a0\ufe0f Note: DB save failed \u2014 please check Supabase.'}`;
     window.open(`https://wa.me/${OWNER_PHONE}?text=${encodeURIComponent(waText)}`, '_blank');
 
     // Step 5: Send email copy to customer if email provided
