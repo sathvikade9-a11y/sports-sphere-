@@ -29,6 +29,7 @@ export default function App() {
   const [selectedProductForInquiry, setSelectedProductForInquiry] = useState('');
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [successContent, setSuccessContent] = useState({ title: '', message: '' });
+  const [pendingWhatsAppUrl, setPendingWhatsAppUrl] = useState('');
   
   // Gallery Lightbox States
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -350,7 +351,7 @@ export default function App() {
     });
     setSuccessModalOpen(true);
 
-    // Step 4: ALWAYS open WhatsApp to owner with full inquiry details
+    // Step 4: Store WhatsApp URL — opened on 'Okay, Great' click (avoids popup blocker)
     const waText =
       `Hello,\n\nNew product inquiry from the website:\n\n` +
       `*Product:* ${selectedProductForInquiry}\n` +
@@ -359,7 +360,7 @@ export default function App() {
       `*Phone:* ${phone || 'N/A'}\n` +
       `*Message:* ${message || 'N/A'}\n\n` +
       `${savedOk ? '\u2705 Saved to database.' : '\u26a0\ufe0f Note: DB save failed \u2014 please check Supabase.'}`;
-    window.open(`https://wa.me/${OWNER_PHONE}?text=${encodeURIComponent(waText)}`, '_blank');
+    setPendingWhatsAppUrl(`https://wa.me/917396162006?text=${encodeURIComponent(waText)}`);
 
     // Step 5: Send email copy to customer if email provided
     if (email) {
@@ -409,7 +410,7 @@ export default function App() {
     });
     setSuccessModalOpen(true);
 
-    // Step 4: ALWAYS open WhatsApp to owner with full contact details
+    // Step 4: Store WhatsApp URL — opened on 'Okay, Great' click (avoids popup blocker)
     const waText =
       `Hello,\n\nNew contact message from the website:\n\n` +
       `*Name:* ${name}\n` +
@@ -418,7 +419,7 @@ export default function App() {
       `*Message:* ${message}\n\n` +
       (analysis.category ? `*Category:* ${analysis.category}\n*Urgency:* ${analysis.urgency}\n` : '') +
       `${savedOk ? '\u2705 Saved to database.' : '\u26a0\ufe0f Note: DB save failed \u2014 please check Supabase.'}`;
-    window.open(`https://wa.me/${OWNER_PHONE}?text=${encodeURIComponent(waText)}`, '_blank');
+    setPendingWhatsAppUrl(`https://wa.me/917396162006?text=${encodeURIComponent(waText)}`);
 
     // Step 5: Send email copy to customer if email provided
     if (email) {
@@ -1695,7 +1696,19 @@ export default function App() {
             </div>
             <h3 style={{ fontSize: '1.75rem', marginBottom: '12px' }} id="success-title">{successContent.title}</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }} id="success-msg">{successContent.message}</p>
-            <button className="btn btn-primary" style={{ padding: '10px 24px' }} onClick={() => setSuccessModalOpen(false)}>Okay, Great</button>
+            <button 
+              className="btn btn-primary" 
+              style={{ padding: '10px 24px' }} 
+              onClick={() => {
+                setSuccessModalOpen(false);
+                if (pendingWhatsAppUrl) {
+                  window.open(pendingWhatsAppUrl, '_blank');
+                  setPendingWhatsAppUrl('');
+                }
+              }}
+            >
+              Okay, Great &rarr; WhatsApp
+            </button>
           </div>
         </div>
       )}
