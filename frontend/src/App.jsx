@@ -453,7 +453,7 @@ export default function App() {
            ========================================== */}
       {currentUser && currentView !== 'login' && (
         <header className={`header ${headerScrolled ? 'scrolled' : ''}`} id="header">
-          <div className="container">
+          <div className="container" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <a href="#home" className="logo">
               <div className="logo-icon">RR</div>
               <div className="logo-text">
@@ -462,30 +462,42 @@ export default function App() {
               </div>
             </a>
             
-            <nav className={`nav-container ${mobileMenuOpen ? 'active' : ''}`} id="nav-container">
+            <nav className={`nav-container ${mobileMenuOpen ? 'active' : ''}`} id="nav-container" style={{ flex: 1 }}>
               <ul className={`nav-menu ${mobileMenuOpen ? 'active' : ''}`} id="nav-menu">
-                {currentUser ? (
-                  <>
-                    <li><a href="#home" className={`nav-link ${currentView === 'site' && activeSection === 'home' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Home</a></li>
-                    <li><a href="#about" className={`nav-link ${currentView === 'site' && activeSection === 'about' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>About</a></li>
-                    <li><a href="#brands" className={`nav-link ${currentView === 'site' && activeSection === 'brands' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Brands</a></li>
-                    <li><a href="#products" className={`nav-link ${currentView === 'site' && activeSection === 'products' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Products</a></li>
-                    <li><a href="#pump-selector" className={`nav-link ${currentView === 'site' && activeSection === 'pump-selector' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Smart Selector</a></li>
-                    <li><a href="#services" className={`nav-link ${currentView === 'site' && activeSection === 'services' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Services</a></li>
-                    <li><a href="#why-choose-us" className={`nav-link ${currentView === 'site' && activeSection === 'why-choose-us' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Why Us</a></li>
-                    <li><a href="#industries" className={`nav-link ${currentView === 'site' && activeSection === 'industries' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Sectors</a></li>
-                    <li><a href="#testimonials" className={`nav-link ${currentView === 'site' && activeSection === 'testimonials' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Reviews</a></li>
-                    <li><a href="#gallery" className={`nav-link ${currentView === 'site' && activeSection === 'gallery' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Gallery</a></li>
-                    <li><a href="#contact" className="nav-link nav-cta" onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Contact Us</a></li>
-                    <li><button onClick={() => { setCurrentView('portal'); setMobileMenuOpen(false); }} className={`nav-link ${currentView === 'portal' ? 'active' : ''}`} style={{ background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer', padding: '10px 16px', display: 'block', textAlign: 'left', width: '100%' }}>My Portal</button></li>
-                    <li><button onClick={handleLogout} className="nav-link nav-cta" style={{ background: '#ef4444', border: 'none', color: 'white', font: 'inherit', cursor: 'pointer', borderRadius: '4px', marginLeft: '10px' }}>Logout</button></li>
-                  </>
-                ) : (
-                  <li><button onClick={() => { setCurrentView('login'); setMobileMenuOpen(false); }} className={`nav-link ${currentView === 'login' ? 'active' : ''}`} style={{ background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer', padding: '10px 16px', display: 'block', textAlign: 'left', width: '100%' }}>Login</button></li>
-                )}
+                <li><a href="#home" className={`nav-link ${currentView === 'site' && activeSection === 'home' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Home</a></li>
+                <li><a href="#about" className={`nav-link ${currentView === 'site' && activeSection === 'about' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>About</a></li>
+                <li><a href="#brands" className={`nav-link ${currentView === 'site' && activeSection === 'brands' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Brands</a></li>
+                <li><a href="#products" className={`nav-link ${currentView === 'site' && activeSection === 'products' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Products</a></li>
+                <li><a href="#pump-selector" className={`nav-link ${currentView === 'site' && activeSection === 'pump-selector' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Smart Selector</a></li>
+                <li><a href="#services" className={`nav-link ${currentView === 'site' && activeSection === 'services' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Services</a></li>
+                <li><a href="#why-choose-us" className={`nav-link ${currentView === 'site' && activeSection === 'why-choose-us' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Why Us</a></li>
+                <li><a href="#industries" className={`nav-link ${currentView === 'site' && activeSection === 'industries' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Sectors</a></li>
+                <li><a href="#testimonials" className={`nav-link ${currentView === 'site' && activeSection === 'testimonials' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Reviews</a></li>
+                <li><a href="#gallery" className={`nav-link ${currentView === 'site' && activeSection === 'gallery' ? 'active' : ''}`} onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}>Gallery</a></li>
+                <li>
+                  <button onClick={() => { setCurrentView('portal'); setMobileMenuOpen(false); }} className={`nav-link ${currentView === 'portal' ? 'active' : ''}`} style={{ background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer', padding: '10px 16px', display: 'block', textAlign: 'left', width: '100%' }}>My Portal</button>
+                </li>
               </ul>
             </nav>
-            
+
+            {/* Right-side action buttons */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+              <a
+                href="#contact"
+                className="btn btn-primary"
+                style={{ padding: '9px 20px', fontSize: '0.88rem', borderRadius: '6px', fontWeight: '600', whiteSpace: 'nowrap' }}
+                onClick={() => { setCurrentView('site'); setMobileMenuOpen(false); }}
+              >
+                Contact Us
+              </a>
+              <button
+                onClick={handleLogout}
+                style={{ background: '#ef4444', border: 'none', color: 'white', font: 'inherit', cursor: 'pointer', borderRadius: '6px', padding: '9px 16px', fontSize: '0.88rem', fontWeight: '600', whiteSpace: 'nowrap' }}
+              >
+                Logout
+              </button>
+            </div>
+
             <button 
               className="mobile-menu-btn" 
               id="mobile-menu-btn" 
@@ -506,7 +518,7 @@ export default function App() {
         </header>
       )}
 
-      {currentView === 'site' && (
+      {currentUser && currentView === 'site' && (
         <>
           {/* ==========================================
                1. HERO SECTION
