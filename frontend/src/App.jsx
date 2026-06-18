@@ -1696,19 +1696,47 @@ export default function App() {
             </div>
             <h3 style={{ fontSize: '1.75rem', marginBottom: '12px' }} id="success-title">{successContent.title}</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }} id="success-msg">{successContent.message}</p>
-            <button 
-              className="btn btn-primary" 
-              style={{ padding: '10px 24px' }} 
-              onClick={() => {
-                setSuccessModalOpen(false);
-                if (pendingWhatsAppUrl) {
-                  window.open(pendingWhatsAppUrl, '_blank');
-                  setPendingWhatsAppUrl('');
-                }
-              }}
-            >
-              Okay, Great &rarr; WhatsApp
-            </button>
+
+            {/* WhatsApp CTA — use <a> not window.open so it is NEVER blocked by popup blockers */}
+            {pendingWhatsAppUrl ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
+                <a
+                  href={pendingWhatsAppUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary"
+                  style={{
+                    padding: '12px 28px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    backgroundColor: '#25D366',
+                    borderColor: '#25D366',
+                    color: 'white',
+                    borderRadius: '8px',
+                    fontWeight: '700',
+                    fontSize: '1rem',
+                    textDecoration: 'none'
+                  }}
+                  onClick={() => { setSuccessModalOpen(false); setPendingWhatsAppUrl(''); }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.618-4.934c-.198-.1-.17-.33-.51-.43-.178-.1-.549-.27-.678-.32-.128-.05-.221-.08-.314.05-.093.13-.36.43-.442.52-.082.1-.164.11-.362.01-.2-.1-.843-.31-1.605-.99-.59-.53-.988-1.17-1.104-1.37-.116-.2-.012-.31.087-.41-.09-.09.198-.23.298-.35.1-.12.13-.2.2-.33.07-.13.035-.25-.018-.35-.054-.1-.482-1.16-.66-1.59-.174-.42-.365-.36-.502-.36-.13 0-.279-.01-.419-.01-.14 0-.368.05-.561.26-.193.21-.738.72-.738 1.76s.754 2.05 1.862 3.19c1.1 1.14 2.184 1.81 3.238 2.22c.983.39 1.48.34 1.838.29.397-.06.87-.36 1.02-.79c.15-.43.15-.8.1-.88-.05-.08-.19-.13-.388-.23"/>
+                  </svg>
+                  Send via WhatsApp
+                </a>
+                <button
+                  style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.9rem', textDecoration: 'underline' }}
+                  onClick={() => { setSuccessModalOpen(false); setPendingWhatsAppUrl(''); }}
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <button className="btn btn-primary" style={{ padding: '10px 24px' }} onClick={() => setSuccessModalOpen(false)}>
+                Okay, Great
+              </button>
+            )}
           </div>
         </div>
       )}
