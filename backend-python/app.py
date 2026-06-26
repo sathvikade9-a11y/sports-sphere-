@@ -1,4 +1,3 @@
-import math
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -8,7 +7,10 @@ CORS(app)  # Enable Cross-Origin Resource Sharing for frontend access
 def parse_hp(power_str):
     """Parses HP float value from strings like '0.5 HP', '10.0 HP', etc."""
     try:
-        clean = ''.join(c for c in power_str if c.isdigit() or c == '.')
+        if power_str is None:
+            
+            return 1.0
+        clean = ''.join(c for c in str(power_str) if c.isdigit() or c == '.')
         return float(clean)
     except Exception:
         return 1.0
@@ -16,7 +18,9 @@ def parse_hp(power_str):
 def parse_num(val_str):
     """Parses first numerical value from a string."""
     try:
-        clean = ''.join(c for c in val_str if c.isdigit() or c == '.')
+        if val_str is None:
+            return 0.0
+        clean = ''.join(c for c in str(val_str) if c.isdigit() or c == '.')
         return float(clean)
     except Exception:
         return 0.0
@@ -38,14 +42,34 @@ def recommend_pumps():
     }
     """
     data = request.get_json() or {}
-    products = data.get('products', [])
-    reqs = data.get('requirements', {})
+    products = data.get('products') or []
+    if not isinstance(products, list):
+        products = []
+    reqs = data.get('requirements') or {}
+    if not isinstance(reqs, dict):
+        reqs = {}
     
-    target_head = float(reqs.get('head', 0))
-    target_flow = float(reqs.get('flow', 0))
-    app_filter = reqs.get('application', 'all').lower()
-    daily_hours = float(reqs.get('dailyHours', 4.0))
-    electricity_rate = float(reqs.get('electricityRate', 7.0))  # INR per kWh
+    try:
+        target_head = float(reqs.get('head') or 0)
+    except (TypeError, ValueError):
+        target_head = 0.0
+
+    try:
+        target_flow = float(reqs.get('flow') or 0)
+    except (TypeError, ValueError):
+        target_flow = 0.0
+
+    app_filter = str(reqs.get('application') or 'all').lower()
+
+    try:
+        daily_hours = float(reqs.get('dailyHours') or 4.0)
+    except (TypeError, ValueError):
+        daily_hours = 4.0
+
+    try:
+        electricity_rate = float(reqs.get('electricityRate') or 7.0)
+    except (TypeError, ValueError):
+        electricity_rate = 7.0
 
     if target_head <= 0 or target_flow <= 0:
         return jsonify({
@@ -64,19 +88,21 @@ def recommend_pumps():
     recommendations = []
 
     for prod in products:
-        prod_category = prod.get('category', '').lower()
+        if not isinstance(prod, dict):
+            continue
+        prod_category = str(prod.get('category') or '').lower()
         
         # Filter by application category
         if app_filter != 'all' and prod_category != app_filter:
             continue
             
-        prod_name = prod.get('name', '')
-        
         # Extract specs
-        specs = prod.get('specs', {})
-        motor_power_str = specs.get('Motor Power', '0 HP')
-        discharge_vol_str = specs.get('Discharge Vol', '0 LPM')
-        max_head_str = specs.get('Max Head', '0 Meters')
+        specs = prod.get('specs') or {}
+        if not isinstance(specs, dict):
+            specs = {}
+        motor_power_str = str(specs.get('Motor Power') or '0 HP')
+        discharge_vol_str = str(specs.get('Discharge Vol') or '0 LPM')
+        max_head_str = str(specs.get('Max Head') or '0 Meters')
 
         pump_hp = parse_hp(motor_power_str)
         pump_max_flow = parse_num(discharge_vol_str)
@@ -153,8 +179,8 @@ def classify_message():
     }
     """
     data = request.get_json() or {}
-    message = data.get('message', '').lower()
-    name = data.get('name', '')
+    message = str(data.get('message') or '').lower()
+    name = str(data.get('name') or '')
 
     # Simple keywords list
     urgent_keywords = ["urgent", "broken", "stop", "leak", "failure", "burst", "emergency", "not working", "burn", "smoke", "blast", "flood", "dry-run", "tripped"]

@@ -74,7 +74,7 @@ export default function App() {
   });
   const [userHistory, setUserHistory] = useState({ inquiries: [], contacts: [] });
   const [loadingHistory, setLoadingHistory] = useState(false);
-  const [loginForm, setLoginForm] = useState({ name: '', email: '' });
+  const [loginForm, setLoginForm] = useState({ name: '', email: '', password: '' });
   const [loginError, setLoginError] = useState('');
 
   // Route safeguard: force login if user is not authenticated
@@ -130,9 +130,9 @@ export default function App() {
     e.preventDefault();
     setLoginError('');
 
-    const { name, email } = loginForm;
-    if (!name.trim() || !email.trim()) {
-      setLoginError('Both Name and Email are required.');
+    const { name, email, password } = loginForm;
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      setLoginError('Name, Email and Password are required.');
       return;
     }
 
@@ -141,10 +141,15 @@ export default function App() {
       return;
     }
 
+    if (password.length < 6) {
+      setLoginError('Password must be at least 6 characters.');
+      return;
+    }
+
     const userData = { name: name.trim(), email: email.trim().toLowerCase() };
     localStorage.setItem('rr_user', JSON.stringify(userData));
     setCurrentUser(userData);
-    setLoginForm({ name: '', email: '' });
+    setLoginForm({ name: '', email: '', password: '' });
     
     // Set success modal welcome message
     setSuccessContent({
@@ -1490,13 +1495,25 @@ export default function App() {
                   />
                 </div>
                 
-                <div style={{ marginBottom: '24px' }}>
+                <div style={{ marginBottom: '20px' }}>
                   <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)' }}>Gmail Address *</label>
                   <input 
                     type="email" 
                     placeholder="yourname@gmail.com" 
                     value={loginForm.email}
                     onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+                    style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'white' }}
+                    required
+                  />
+                </div>
+
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)' }}>Password *</label>
+                  <input 
+                    type="password" 
+                    placeholder="Enter your password" 
+                    value={loginForm.password}
+                    onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                     style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'white' }}
                     required
                   />
