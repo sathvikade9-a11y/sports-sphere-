@@ -1462,7 +1462,7 @@ export default function App() {
               />
             </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+            <div className="form-grid" style={{ gap: '16px', marginBottom: '20px' }}>
               <input 
                 type="email" 
                 placeholder="Email Address" 
@@ -1596,7 +1596,7 @@ export default function App() {
         </section>
       )}
 
-      {currentView === 'portal' && (
+      {currentUser && currentView === 'portal' && (
         <section className="portal-section" style={{ minHeight: '80vh', background: 'var(--bg-light)', color: 'var(--text-dark)', padding: '120px 24px 80px 24px' }}>
           <div className="container">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', borderBottom: '2px solid var(--border-color)', paddingBottom: '20px', flexWrap: 'wrap', gap: '20px' }}>
@@ -1610,7 +1610,7 @@ export default function App() {
               </button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+            <div className="portal-grid" style={{ gap: '30px' }}>
               {/* Pump Inquiries */}
               <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
