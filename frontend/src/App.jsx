@@ -76,6 +76,7 @@ export default function App() {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [loginForm, setLoginForm] = useState({ name: '', email: '', password: '' });
   const [loginError, setLoginError] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
 
   // Route safeguard: force login if user is not authenticated
   useEffect(() => {
@@ -125,14 +126,16 @@ export default function App() {
     }
   }, [currentUser]);
 
-  // Handle customer login
-  const handleLoginSubmit = (e) => {
+  // Handle customer login or signup
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLoginError('');
 
     const { name, email, password } = loginForm;
-    if (!name.trim() || !email.trim() || !password.trim()) {
-      setLoginError('Name, Email and Password are required.');
+    
+    // Common validation
+    if (!email.trim() || !password.trim()) {
+      setLoginError('Gmail ID and Password are required.');
       return;
     }
 
@@ -146,18 +149,49 @@ export default function App() {
       return;
     }
 
-    const userData = { name: name.trim(), email: email.trim().toLowerCase() };
-    localStorage.setItem('rr_user', JSON.stringify(userData));
-    setCurrentUser(userData);
-    setLoginForm({ name: '', email: '', password: '' });
-    
-    // Set success modal welcome message
-    setSuccessContent({
-      title: "Welcome to Raja Rajeshwara Engineerings",
-      message: `Hello ${name.trim()}, you have successfully signed into the portal. You can now explore our pump solutions and view your submission history.`
-    });
-    setSuccessModalOpen(true);
-    setCurrentView('site');
+    if (isSignUp && !name.trim()) {
+      setLoginError('Full Name is required for Sign Up.');
+      return;
+    }
+
+    try {
+      const endpoint = isSignUp ? '/api/auth/signup' : '/api/auth/login';
+      const body = isSignUp ? { name: name.trim(), email: email.trim().toLowerCase(), password } : { email: email.trim().toLowerCase(), password };
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setLoginError(data.error || 'Authentication failed. Please try again.');
+        return;
+      }
+
+      // Successful auth
+      const userData = { name: data.user.name, email: data.user.email };
+      localStorage.setItem('rr_user', JSON.stringify(userData));
+      setCurrentUser(userData);
+      setLoginForm({ name: '', email: '', password: '' });
+      
+      // Redirect directly to website for standard login, show modal only for signup
+      if (isSignUp) {
+        setSuccessContent({
+          title: "Account Created!",
+          message: `Hello ${userData.name}, your account was successfully created. Welcome to the portal.`
+        });
+        setSuccessModalOpen(true);
+      }
+      setIsSignUp(false);
+      setCurrentView('site');
+
+    } catch (err) {
+      setLoginError('Could not connect to the authentication service. Make sure backend is running.');
+      console.error("Auth error:", err);
+    }
   };
 
   // Handle logout
@@ -486,7 +520,7 @@ export default function App() {
             </nav>
 
             {/* Right-side action buttons */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+            <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
               <a
                 href="#contact"
                 className="btn btn-primary"
@@ -638,7 +672,7 @@ export default function App() {
       <section className="brands section-bg-light" id="brands" ref={sectionRefs.brands}>
         <div className="container">
           <div className="section-header">
-            <span class="section-tag">Authorized Partner</span>
+            <span className="section-tag">Authorized Partner</span>
             <h2 className="section-title">Brands We Deal With</h2>
             <p className="section-subtitle">We partner with premier pumping equipment manufacturers to guarantee long-lasting performance and compliance with industrial standards.</p>
           </div>
@@ -1375,7 +1409,7 @@ export default function App() {
            11. CONTACT SECTION (With AI Classifier)
            ========================================== */}
       <section className="contact" id="contact" ref={sectionRefs.contact} style={{ background: 'var(--primary)', color: 'white', padding: '100px 24px' }}>
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'center' }}>
+        <div className="container contact-grid" style={{ alignItems: 'center' }}>
           <div>
             <span className="section-tag" style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'var(--accent)' }}>Get in Touch</span>
             <h2 className="section-title" style={{ color: 'white', fontSize: '2.5rem' }}>Let's Build Your Water Infrastructure Together</h2>
@@ -1477,23 +1511,30 @@ export default function App() {
         <section className="login-section" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--primary)', color: 'white', padding: '120px 24px 80px 24px' }}>
           <div className="container" style={{ maxWidth: '450px', width: '100%' }}>
             <div style={{ backgroundColor: 'var(--primary-light)', padding: '40px', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: 'var(--shadow-lg)' }}>
-              <h2 className="section-title" style={{ color: 'white', fontSize: '2rem', marginBottom: '8px', textAlign: 'center' }}>Portal Login</h2>
+              <h2 className="section-title" style={{ color: 'white', fontSize: '2rem', marginBottom: '8px', textAlign: 'center' }}>
+                {isSignUp ? "Portal Sign Up" : "Portal Log In"}
+              </h2>
               <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '30px', textAlign: 'center', fontSize: '0.9rem' }}>
-                Sign in with your credentials to view your pump inquiry and service request history.
+                {isSignUp 
+                  ? "Create a portal account using your Gmail ID and credentials to track your pump solutions."
+                  : "Sign in with your credentials to view your pump inquiry and service request history."
+                }
               </p>
               
               <form onSubmit={handleLoginSubmit}>
-                <div style={{ marginBottom: '20px' }}>
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)' }}>Full Name *</label>
-                  <input 
-                    type="text" 
-                    placeholder="Enter your name" 
-                    value={loginForm.name}
-                    onChange={(e) => setLoginForm({ ...loginForm, name: e.target.value })}
-                    style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'white' }}
-                    required
-                  />
-                </div>
+                {isSignUp && (
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)' }}>Full Name *</label>
+                    <input 
+                      type="text" 
+                      placeholder="Enter your name" 
+                      value={loginForm.name}
+                      onChange={(e) => setLoginForm({ ...loginForm, name: e.target.value })}
+                      style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'white' }}
+                      required
+                    />
+                  </div>
+                )}
                 
                 <div style={{ marginBottom: '20px' }}>
                   <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)' }}>Gmail Address *</label>
@@ -1526,9 +1567,20 @@ export default function App() {
                 )}
                 
                 <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '14px 0' }}>
-                  Login
+                  {isSignUp ? "Sign Up" : "Log In"}
                 </button>
               </form>
+
+              <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>
+                {isSignUp ? "Already have an account? " : "Don't have an account? "}
+                <button 
+                  type="button" 
+                  onClick={() => { setIsSignUp(!isSignUp); setLoginError(''); }}
+                  style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', font: 'inherit', fontWeight: 'bold', textDecoration: 'underline', padding: 0 }}
+                >
+                  {isSignUp ? "Log In" : "Sign Up"}
+                </button>
+              </div>
               {currentUser && (
                 <div style={{ marginTop: '20px', textAlign: 'center' }}>
                   <button 

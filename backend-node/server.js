@@ -4,6 +4,7 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
+const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
@@ -30,6 +31,7 @@ const DATA_DIR = path.join(__dirname, 'data');
 const PRODUCTS_FILE = path.join(DATA_DIR, 'products.json');
 const INQUIRIES_FILE = path.join(DATA_DIR, 'inquiries.json');
 const CONTACTS_FILE = path.join(DATA_DIR, 'contacts.json');
+const USERS_FILE = path.join(DATA_DIR, 'users.json');
 
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -43,6 +45,16 @@ const initializeFile = (filePath, defaultData) => {
 
 initializeFile(INQUIRIES_FILE, []);
 initializeFile(CONTACTS_FILE, []);
+initializeFile(USERS_FILE, []);
+
+// Hashing helper functions
+const hashPassword = (password, salt) => {
+  if (!salt) {
+    salt = crypto.randomBytes(16).toString('hex');
+  }
+  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+  return { salt, hash };
+};
 
 // Utility function to read files safely
 const readJsonFile = (filePath) => {
@@ -97,6 +109,144 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Auth: User Signup
+app.post('/api/auth/signup', async (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password || typeof name !== 'string' || typeof email !== 'string' || typeof password !== 'string') {
+    return res.status(400).json({ error: "Name, email, and password are required and must be strings." });
+  }
+
+  const normalizedEmail = email.toLowerCase().trim();
+
+  if (!normalizedEmail.endsWith('@gmail.com')) {
+    return res.status(400).json({ error: "Please enter a valid Gmail address (ending in @gmail.com)." });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({ error: "Password must be at least 6 characters." });
+  }
+
+  const { salt, hash } = hashPassword(password);
+
+  try {
+    if (supabase) {
+      // Check if user already exists
+      const { data: existingUser, error: selectError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', normalizedEmail)
+        .maybeSingle();
+
+      if (selectError && selectError.code !== 'PGRST116') {
+        throw selectError;
+      }
+
+      if (existingUser) {
+        return res.status(400).json({ error: "Gmail ID is already registered." });
+      }
+
+      // Insert new user
+      const { data: newUser, error: insertError } = await supabase
+        .from('users')
+        .insert([{ name, email: normalizedEmail, password_hash: hash, salt }])
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+
+      return res.status(201).json({
+        message: "Registration successful!",
+        user: { name: newUser.name, email: newUser.email }
+      });
+    }
+  } catch (err) {
+    console.error("Supabase signup error (falling back to local users.json):", err.message || err);
+  }
+
+  // Local JSON implementation
+  const users = readJsonFile(USERS_FILE);
+  const existingUser = users.find(u => u.email === normalizedEmail);
+
+  if (existingUser) {
+    return res.status(400).json({ error: "Gmail ID is already registered." });
+  }
+
+  const newUser = {
+    id: users.length + 1,
+    name,
+    email: normalizedEmail,
+    password_hash: hash,
+    salt,
+    createdAt: new Date().toISOString()
+  };
+
+  users.push(newUser);
+  writeJsonFile(USERS_FILE, users);
+
+  res.status(201).json({
+    message: "Registration successful!",
+    user: { name: newUser.name, email: newUser.email }
+  });
+});
+
+// Auth: User Login
+app.post('/api/auth/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password || typeof email !== 'string' || typeof password !== 'string') {
+    return res.status(400).json({ error: "Email and password are required and must be strings." });
+  }
+
+  const normalizedEmail = email.toLowerCase().trim();
+
+  try {
+    if (supabase) {
+      const { data: user, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', normalizedEmail)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!user) {
+        return res.status(400).json({ error: "Invalid email or password." });
+      }
+
+      const { hash } = hashPassword(password, user.salt);
+      if (hash !== user.password_hash) {
+        return res.status(400).json({ error: "Invalid email or password." });
+      }
+
+      return res.json({
+        message: "Login successful!",
+        user: { name: user.name, email: user.email }
+      });
+    }
+  } catch (err) {
+    console.error("Supabase login error (falling back to local users.json):", err.message || err);
+  }
+
+  // Local JSON implementation
+  const users = readJsonFile(USERS_FILE);
+  const user = users.find(u => u.email === normalizedEmail);
+
+  if (!user) {
+    return res.status(400).json({ error: "Invalid email or password." });
+  }
+
+  const { hash } = hashPassword(password, user.salt);
+  if (hash !== user.password_hash) {
+    return res.status(400).json({ error: "Invalid email or password." });
+  }
+
+  res.json({
+    message: "Login successful!",
+    user: { name: user.name, email: user.email }
+  });
+});
+
 // 1. Get Products (Supports Search and Category Filters)
 app.get('/api/products', async (req, res) => {
   const { category, search } = req.query;
@@ -110,8 +260,11 @@ app.get('/api/products', async (req, res) => {
       }
       
       if (search) {
-        const term = `%${search}%`;
-        query = query.or(`name.ilike.${term},description.ilike.${term},brand.ilike.${term}`);
+        const cleanSearch = String(search).replace(/[,()]/g, ' ').trim();
+        if (cleanSearch) {
+          const term = `%${cleanSearch}%`;
+          query = query.or(`name.ilike.${term},description.ilike.${term},brand.ilike.${term}`);
+        }
       }
 
       const { data, error } = await query;
@@ -119,7 +272,7 @@ app.get('/api/products', async (req, res) => {
       return res.json(data);
     }
   } catch (err) {
-    // Fall back to local storage on error
+    console.error("Supabase products query error (falling back to local products.json):", err.message || err);
   }
 
   const products = readJsonFile(PRODUCTS_FILE);
@@ -171,7 +324,7 @@ app.post('/api/inquiries', async (req, res) => {
       });
     }
   } catch (err) {
-    // Fall back to local JSON
+    console.error("Supabase submit inquiry error (falling back to local inquiries.json):", err.message || err);
   }
 
   const inquiries = readJsonFile(INQUIRIES_FILE);
@@ -242,7 +395,7 @@ app.post('/api/contact', async (req, res) => {
       });
     }
   } catch (err) {
-    // Fall back to local JSON
+    console.error("Supabase log contact error (falling back to local contacts.json):", err.message || err);
   }
 
   const contacts = readJsonFile(CONTACTS_FILE);
@@ -294,7 +447,7 @@ app.get('/api/history', async (req, res) => {
       });
     }
   } catch (err) {
-    // Fall back to local JSON
+    console.error("Supabase history query error (falling back to local JSON files):", err.message || err);
   }
 
   const inquiries = readJsonFile(INQUIRIES_FILE);
@@ -339,8 +492,8 @@ app.post('/api/recommend', async (req, res) => {
         head: parseFloat(head),
         flow: parseFloat(flow),
         application: application || 'all',
-        dailyHours: parseFloat(dailyHours || 4.0),
-        electricityRate: parseFloat(electricityRate || 7.0)
+        dailyHours: dailyHours !== undefined && dailyHours !== null && dailyHours !== '' ? parseFloat(dailyHours) : 4.0,
+        electricityRate: electricityRate !== undefined && electricityRate !== null && electricityRate !== '' ? parseFloat(electricityRate) : 7.0
       }
     });
 
@@ -354,6 +507,20 @@ app.post('/api/recommend', async (req, res) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
-  // Silent start
+const server = app.listen(PORT, () => {
+  console.log(`\n==================================================`);
+  console.log(`  Node.js API Gateway is running on Port ${PORT}`);
+  console.log(`  Supabase Status: ${supabase ? 'Connected' : 'Local Fallback'}`);
+  console.log(`  Python Backend target: ${PYTHON_BACKEND_URL}`);
+  console.log(`==================================================\n`);
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n[FATAL ERROR] Port ${PORT} is already in use!`);
+    console.error(`Please close any application running on port ${PORT} and restart.\n`);
+  } else {
+    console.error(`\n[FATAL ERROR] Failed to start server:`, err.message, `\n`);
+  }
+  process.exit(1);
 });

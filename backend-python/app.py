@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import re
 
 app = Flask(__name__)
 CORS(app)  # Enable Cross-Origin Resource Sharing for frontend access
@@ -8,10 +9,11 @@ def parse_hp(power_str):
     """Parses HP float value from strings like '0.5 HP', '10.0 HP', etc."""
     try:
         if power_str is None:
-            
             return 1.0
-        clean = ''.join(c for c in str(power_str) if c.isdigit() or c == '.')
-        return float(clean)
+        match = re.search(r'\d+(?:\.\d+)?', str(power_str))
+        if match:
+            return float(match.group(0))
+        return 1.0
     except Exception:
         return 1.0
 
@@ -20,8 +22,10 @@ def parse_num(val_str):
     try:
         if val_str is None:
             return 0.0
-        clean = ''.join(c for c in str(val_str) if c.isdigit() or c == '.')
-        return float(clean)
+        match = re.search(r'\d+(?:\.\d+)?', str(val_str))
+        if match:
+            return float(match.group(0))
+        return 0.0
     except Exception:
         return 0.0
 
@@ -61,15 +65,23 @@ def recommend_pumps():
 
     app_filter = str(reqs.get('application') or 'all').lower()
 
-    try:
-        daily_hours = float(reqs.get('dailyHours') or 4.0)
-    except (TypeError, ValueError):
+    daily_hours_val = reqs.get('dailyHours')
+    if daily_hours_val is None or daily_hours_val == '':
         daily_hours = 4.0
+    else:
+        try:
+            daily_hours = float(daily_hours_val)
+        except (TypeError, ValueError):
+            daily_hours = 4.0
 
-    try:
-        electricity_rate = float(reqs.get('electricityRate') or 7.0)
-    except (TypeError, ValueError):
+    electricity_rate_val = reqs.get('electricityRate')
+    if electricity_rate_val is None or electricity_rate_val == '':
         electricity_rate = 7.0
+    else:
+        try:
+            electricity_rate = float(electricity_rate_val)
+        except (TypeError, ValueError):
+            electricity_rate = 7.0
 
     if target_head <= 0 or target_flow <= 0:
         return jsonify({
@@ -229,4 +241,14 @@ def classify_message():
     })
 
 if __name__ == '__main__':
-    app.run(port=8000, debug=False)
+    try:
+        print(f"\n==================================================")
+        print(f"  Python Calculation Backend running on Port 8000")
+        print(f"==================================================\n")
+        app.run(port=8000, debug=False)
+    except Exception as e:
+        if "10048" in str(e) or "already in use" in str(e).lower():
+            print(f"\n[FATAL ERROR] Port 8000 is already in use!")
+            print(f"Please close any application running on port 8000 and restart.\n")
+        else:
+            print(f"\n[FATAL ERROR] Failed to start server: {e}\n")
